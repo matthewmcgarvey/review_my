@@ -16,11 +16,24 @@ class Snippets::NewPage < Private::WrappedLayout
       mount Shared::Field, op.title, &.text_input(autofocus: true, placeholder: "A short and sweet summary of your snippet")
 
       render_domain_restriction_checkbox(op)
-
+      render_revision_deadline_datetime(op)
       render_content_editor(op)
 
       submit "Create", class: "bg-indigo-500 hover:bg-indigo-700 text-gray-100 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
     end
+  end
+
+  private def render_revision_deadline_datetime(op)
+    mount Shared::Field,
+      op.revision_deadline,
+      "Revision deadline (when you plan to send your message)", &.datetime_input(
+      data_controller: "flatpickr",
+      data_flatpickr_enable_time: true,
+      data_flatpickr_date_format: "Z",
+      data_flatpickr_alt_format: "M J, Y at h:i K",
+      data_flatpickr_alt_input: true,
+      data_flatpickr_min_date: Time.utc.to_s
+    )
   end
 
   private def render_content_editor(op)

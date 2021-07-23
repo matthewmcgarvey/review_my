@@ -8,7 +8,7 @@
     "module": "es6",
     "moduleResolution": "node",
     "baseUrl": ".",
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["node_modules/@types", "app/js/custom_types"],
     "paths": {
       "*": ["node_modules/*", "app/js/*"]
     },

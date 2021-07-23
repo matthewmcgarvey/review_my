@@ -17,6 +17,19 @@ class Snippet::CardHeader < BaseComponent
             span "by"
             span snippet.creator.email, class: "ml-1 font-medium"
           end
+
+          if (deadline = snippet.revision_deadline)
+            para class: "mt-1 flex items-center text-sm leading-5 text-gray-500 space-x-1" do
+              if deadline < Time.utc
+                span "sent"
+                span time_ago_in_words(deadline), class: "font-medium"
+                span "ago"
+              else
+                span "sending in"
+                span time_from_now_in_words(deadline), class: "font-medium"
+              end
+            end
+          end
         end
 
         div class: "ml-4 mt-4 flex-shrink-0" do
