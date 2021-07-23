@@ -11,7 +11,7 @@ abstract class Public::SimpleLayout
     html_doctype
 
     html lang: "en" do
-      mount Shared::LayoutHead, page_title: page_title, context: context
+      mount Shared::LayoutHead, page_title: page_title
 
       body do
         div class: "bg-gray-800" do

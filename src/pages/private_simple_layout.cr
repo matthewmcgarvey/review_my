@@ -10,7 +10,7 @@ abstract class Private::SimpleLayout
     html_doctype
 
     html lang: "en" do
-      mount Shared::LayoutHead, page_title: page_title, context: context
+      mount Shared::LayoutHead, page_title: page_title
 
       body do
         div class: "invisible lg:visible fixed top-0 left-0 w-1/2 h-full bg-white"

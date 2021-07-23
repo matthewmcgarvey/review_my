@@ -8,21 +8,27 @@ targets:
   webserver:
     main: src/review_my.cr
 
-crystal: 0.36.1
+crystal: 1.1.0
 
 dependencies:
   lucky:
     github: luckyframework/lucky
-    version: ~> 0.26.0
+    version: ~> 0.28.0
   authentic:
     github: luckyframework/authentic
-    version: ~> 0.7.2
+    version: ~> 0.8.0
   carbon:
     github: luckyframework/carbon
-    version: ~> 0.1.2
-  dotenv:
-    github: gdotdesign/cr-dotenv
-    version: ~> 0.7.0
+    version: ~> 0.2.0
+  carbon_sendgrid_adapter:
+    github: luckyframework/carbon_sendgrid_adapter
+    version: ~> 0.1.0
+  lucky_env:
+    github: luckyframework/lucky_env
+    version: ~> 0.1.3
+  lucky_task:
+    github: luckyframework/lucky_task
+    version: ~> 0.1.0
   jwt:
     github: crystal-community/jwt
     version: ~> 1.5.0

@@ -9,6 +9,7 @@
 require "./src/app"
 
 # You can add your own tasks here in the ./tasks folder
+require "lucky_task"
 require "./tasks/**"
 
 # Load migrations
@@ -17,4 +18,4 @@ require "./db/migrations/**"
 # Load Lucky tasks (dev, routes, etc.)
 require "lucky/tasks/**"
 
-LuckyCli::Runner.run
+LuckyTask::Runner.run

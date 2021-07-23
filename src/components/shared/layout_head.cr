@@ -1,7 +1,5 @@
 class Shared::LayoutHead < BaseComponent
   needs page_title : String
-  # This is used by the 'csrf_meta_tags' method
-  needs context : HTTP::Server::Context
 
   def render
     head do
@@ -11,7 +9,7 @@ class Shared::LayoutHead < BaseComponent
       css_link href: "https://rsms.me/inter/inter.css"
 
       # Set up page view tracking in production only
-      if Lucky::Env.production?
+      if LuckyEnv.production?
         js_link src: "https://instant.page/5.1.0", type: "module", integrity: "sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"
       end
 

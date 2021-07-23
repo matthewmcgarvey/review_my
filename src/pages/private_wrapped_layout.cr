@@ -10,7 +10,7 @@ abstract class Private::WrappedLayout
     html_doctype
 
     html lang: "en" do
-      mount Shared::LayoutHead, page_title: page_title, context: context
+      mount Shared::LayoutHead, page_title: page_title
 
       body class: "flex flex-col" do
         div class: "bg-gray-800 pb-32" do

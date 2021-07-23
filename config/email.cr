@@ -1,8 +1,10 @@
+require "carbon_sendgrid_adapter"
+
 BaseEmail.configure do |settings|
-  if Lucky::Env.production? || Lucky::Env.development?
+  if LuckyEnv.production? || LuckyEnv.development?
     send_grid_key = send_grid_key_from_env
     settings.adapter = Carbon::SendGridAdapter.new(api_key: send_grid_key)
-  elsif Lucky::Env.development?
+  elsif LuckyEnv.development?
     settings.adapter = Carbon::DevAdapter.new(print_emails: true)
   else
     settings.adapter = Carbon::DevAdapter.new
