@@ -1,6 +1,7 @@
 import { Controller } from "stimulus";
 import { diff_match_patch } from "diff-match-patch";
 import he from "he";
+import { nextTick } from "process";
 
 // Given an old and new target, calculate the difference and display
 // it in the display target.
@@ -22,15 +23,62 @@ export default class extends Controller {
   }
 
   calculateAndDisplayDiff(): void {
-    const oldContent = this.stripComments(this.oldTarget.innerHTML);
-    const newContent = this.stripComments(this.newTarget.innerHTML);
+    const oldContent = this.cleanInitialHtml(this.oldTarget.innerHTML);
+    const newContent = this.cleanInitialHtml(this.newTarget.innerHTML);
 
     const prettyDiff = this.prettyDiff(oldContent, newContent);
-
-    this.displayTarget.innerHTML = this.sanitize(prettyDiff);
+    const sanitizedDiff = this.sanitize(prettyDiff);
+    this.displayTarget.innerHTML = this.correctHtmlTagOrder(sanitizedDiff);
   }
 
-  prettyDiff(oldText: string, newText: string): string {
+  // After our diff-match-patch library creates the diff, sometimes the insert (`ins`) or delete (`del`) tags are placed incorrectly.
+  // This method walks the HTML, attempting to correct broken stuff like `</<ins>em>` so that it is `<ins></em>`.
+  private correctHtmlTagOrder(html: string): string {
+    const regex = new RegExp(/<?([^<>]+)>?/gi);
+
+    let outputStack: string[] = [];
+    let incompleteTags: string[] = [];
+
+    html.match(regex)?.forEach((element) => {
+      if (element.match(/<[^>]+>/i)) {
+        outputStack.push(element);
+      } else if (element.match(/<[^>]+>?/i) || element.match(/<?[^>]+>/i)) {
+        if (this.isBadHtmlTagStart(element)) {
+          incompleteTags.push(element);
+        } else if (this.isBadHtmlTagEnd(element)) {
+          const previousBadTag = incompleteTags.pop();
+
+          if (previousBadTag === undefined) {
+            return;
+          }
+
+          if (this.isBadHtmlTagStart(previousBadTag)) {
+            const newElement = `${previousBadTag}${element}`;
+
+            outputStack.push(newElement);
+          } else {
+            incompleteTags.push(previousBadTag);
+            incompleteTags.push(element);
+          }
+        }
+      } else {
+        outputStack.push(element);
+      }
+    });
+
+    return outputStack.join("");
+  }
+
+  private isBadHtmlTagStart(tag: string): boolean {
+    return /<\/?/.test(tag);
+  }
+
+  private isBadHtmlTagEnd(tag: string): boolean {
+    return />/.test(tag);
+  }
+
+  // Use the diff-match-patch library to get the diff between two HTML strings.
+  private prettyDiff(oldText: string, newText: string): string {
     const differ = new diff_match_patch();
 
     // Get the main diff, character by character
@@ -43,14 +91,19 @@ export default class extends Controller {
     return differ.diff_prettyHtml(htmlDiff);
   }
 
-  stripComments(html: string): string {
-    return html.replace(/<!--\s*block\s*-->/g, "");
+  // Comments make diffs a pain. Let's kill them.
+  // hrefs also makes diffs a pain, so we strip the attribute and keep the `a`
+  private cleanInitialHtml(html: string): string {
+    let output = html.replace(/<!--\s*block\s*-->/g, "");
+    output = output.replace(/<a[^>]+>/g, "<a>");
+
+    return output;
   }
 
   // Because we're dealing with a Trix editor, <div>s are the only
   // block elements we really run into issues with around <ins> and <del> inline elements.
   // This removes all of the divs, and then wraps them around <br> tags to preserve whitespace.
-  sanitize(html: string): string {
+  private sanitize(html: string): string {
     let returnHtml = he.decode(html);
 
     // Move newlines from divs to brs, strip comments
