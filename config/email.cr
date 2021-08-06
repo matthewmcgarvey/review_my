@@ -1,21 +1,24 @@
-require "carbon_sendgrid_adapter"
-
 BaseEmail.configure do |settings|
   if LuckyEnv.production? || LuckyEnv.development?
-    send_grid_key = send_grid_key_from_env
-    settings.adapter = Carbon::SendGridAdapter.new(api_key: send_grid_key)
-  elsif LuckyEnv.development?
-    settings.adapter = Carbon::DevAdapter.new(print_emails: true)
+    ses_region = carbon_key_from_env("SES_REGION")
+    ses_access_key = carbon_key_from_env("SES_ACCESS_KEY")
+    ses_secret_key = carbon_key_from_env("SES_SECRET_KEY")
+
+    settings.adapter = Carbon::AwsSesAdapter.new(
+      key: ses_access_key,
+      secret: ses_secret_key,
+      region: ses_region
+    )
   else
     settings.adapter = Carbon::DevAdapter.new
   end
 end
 
-private def send_grid_key_from_env
-  ENV["SEND_GRID_KEY"]? || raise_missing_key_message
+private def carbon_key_from_env(key)
+  ENV[key]? || raise_missing_key_message(key)
 end
 
-private def raise_missing_key_message
-  puts "Missing SEND_GRID_KEY. Set the SEND_GRID_KEY env variable to 'unused' if not sending emails, or set the SEND_GRID_KEY ENV var.".colorize.red
+private def raise_missing_key_message(key)
+  puts "Missing #{key}. Set the #{key} env variable to 'unused' if not sending emails, or set the #{key} ENV var.".colorize.red
   exit(1)
 end

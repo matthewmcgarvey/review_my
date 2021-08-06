@@ -6,6 +6,7 @@ LuckyEnv.load?(".env")
 require "avram"
 require "lucky"
 require "carbon"
+require "carbon_aws_ses_adapter"
 require "authentic"
 require "jwt"
 require "raven"

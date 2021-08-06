@@ -20,9 +20,9 @@ dependencies:
   carbon:
     github: luckyframework/carbon
     version: ~> 0.2.0
-  carbon_sendgrid_adapter:
-    github: luckyframework/carbon_sendgrid_adapter
-    version: ~> 0.1.0
+  carbon_aws_ses_adapter:
+    github: keizo3/carbon_aws_ses_adapter
+    branch: main
   lucky_env:
     github: luckyframework/lucky_env
     version: ~> 0.1.3
