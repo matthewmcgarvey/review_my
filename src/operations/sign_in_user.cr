@@ -27,21 +27,20 @@ class SignInUser < Avram::Operation
   #    end
   private def validate_credentials(user)
     if user
-      unless Authentic.correct_password?(user, password.value.to_s)
-        email.add_error "or password is incorrect"
-        password.add_error "or email is incorrect"
-
-        # Short circuit so that people can't fish for emails
+      unless user.confirmed?
+        email.add_error "is not confirmed"
         return
       end
 
-      unless user.confirmed?
-        email.add_error "needs to be confirmed"
+      unless Authentic.correct_password?(user, password.value.to_s)
+        password.add_error "is wrong"
+        return
       end
     else
-      # Obfuscate whether or not the user is in the database
-      email.add_error "or password is incorrect"
-      password.add_error "or email is incorrect"
+      # Usually ok to say that an email is not in the system:
+      # https://kev.inburke.com/kevin/invalid-username-or-password-useless/
+      # https://github.com/luckyframework/lucky_cli/issues/192
+      email.add_error "is not in our system"
     end
   end
 end
