@@ -108,7 +108,7 @@ export default class extends Controller {
 
     // Move newlines from divs to brs, strip comments
     returnHtml = returnHtml.replace(/<\/?div>/g, "");
-    returnHtml = returnHtml.replace(/<br>/g, "<div><br></div>");
+    returnHtml = returnHtml.replace(/<br>/g, "<span><br></span>");
 
     // Replace <ins> backgrounds with TailwindCSS colors
     returnHtml = returnHtml.replace(
