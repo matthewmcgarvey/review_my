@@ -34,15 +34,25 @@ export default class extends Controller {
   // After our diff-match-patch library creates the diff, sometimes the insert (`ins`) or delete (`del`) tags are placed incorrectly.
   // This method walks the HTML, attempting to correct broken stuff like `</<ins>em>` so that it is `<ins></em>`.
   private correctHtmlTagOrder(html: string): string {
-    const regex = new RegExp(/<?([^<>]+)>?/gi);
+    const regex = new RegExp(/<*([^<>]+)>*/gi);
 
     let outputStack: string[] = [];
     let incompleteTags: string[] = [];
 
     html.match(regex)?.forEach((element) => {
-      if (element.match(/<[^>]+>/i)) {
+      if (this.isGoodHtmlTag(element)) {
+        if (element.startsWith("<<")) {
+          incompleteTags.push("<");
+          element = element.replace("<<", "<");
+        }
+
+        if (element.endsWith(">>")) {
+          // incompleteTags.push(">");
+          element = element.replace(">>", ">");
+        }
+
         outputStack.push(element);
-      } else if (element.match(/<[^>]+>?/i) || element.match(/<?[^>]+>/i)) {
+      } else if (this.isBadHtmlTag(element)) {
         if (this.isBadHtmlTagStart(element)) {
           incompleteTags.push(element);
         } else if (this.isBadHtmlTagEnd(element)) {
@@ -62,11 +72,31 @@ export default class extends Controller {
           }
         }
       } else {
+        if (element === "br") {
+          const previousBadTag = incompleteTags.pop();
+
+          if (previousBadTag !== undefined && previousBadTag === "<") {
+            if (previousBadTag === "<") {
+              outputStack.push("<br>");
+              return;
+            } else {
+              incompleteTags.push(previousBadTag);
+            }
+          }
+        }
         outputStack.push(element);
       }
     });
 
     return outputStack.join("");
+  }
+
+  private isGoodHtmlTag(tag: string): boolean {
+    return /<[^>]+>/i.test(tag);
+  }
+
+  private isBadHtmlTag(tag: string): boolean {
+    return /<[^>]+>?/i.test(tag) || /<?[^>]+>/i.test(tag);
   }
 
   private isBadHtmlTagStart(tag: string): boolean {
