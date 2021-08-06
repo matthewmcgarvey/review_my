@@ -136,10 +136,6 @@ export default class extends Controller {
   private sanitize(html: string): string {
     let returnHtml = he.decode(html);
 
-    // Move newlines from divs to brs, strip comments
-    returnHtml = returnHtml.replace(/<\/?div>/g, "");
-    returnHtml = returnHtml.replace(/<br>/g, "<span><br></span>");
-
     // Replace <ins> backgrounds with TailwindCSS colors
     returnHtml = returnHtml.replace(
       /<ins style="background:#.{6};">/g,
