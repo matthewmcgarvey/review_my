@@ -1,4 +1,4 @@
-import { Controller } from "stimulus";
+import { Controller } from "@hotwired/stimulus";
 import { diff_match_patch } from "diff-match-patch";
 import he from "he";
 import { nextTick } from "process";
