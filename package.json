@@ -2,7 +2,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@babel/compat-data": "^7.16.0",
+    "@babel/compat-data": "^7.16.4",
     "@hotwired/stimulus": "^3.0.1",
     "@hotwired/stimulus-webpack-helpers": "^1.0.1",
     "@rails/ujs": "^6.1.4",
